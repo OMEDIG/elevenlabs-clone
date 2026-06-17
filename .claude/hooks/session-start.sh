@@ -20,6 +20,9 @@ if [ -d "$FRONTEND_DIR" ]; then
 fi
 
 # Allow `next build` to run without populated secrets in dev sessions.
+# Only append if not already present so repeated runs stay idempotent.
 if [ -n "${CLAUDE_ENV_FILE:-}" ]; then
-  echo 'export SKIP_ENV_VALIDATION=1' >> "$CLAUDE_ENV_FILE"
+  if ! grep -qE '^\s*(export\s+)?SKIP_ENV_VALIDATION=' "$CLAUDE_ENV_FILE" 2>/dev/null; then
+    echo 'export SKIP_ENV_VALIDATION=1' >> "$CLAUDE_ENV_FILE"
+  fi
 fi
